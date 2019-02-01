@@ -2564,6 +2564,8 @@ struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.Verify(jsonFile()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASFILE) &&
            verifier.Verify(atlasFile()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASTEXT) &&
+           verifier.Verify(atlasText()) &&           
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTSKIN) &&
            verifier.Verify(defaultSkin()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTANIMATION) &&
@@ -2627,6 +2629,7 @@ inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeletonDirect(flatbuffers:
     flatbuffers::Offset<Node> node = 0,
     const char *jsonFile = nullptr,
     const char *atlasFile = nullptr,
+    const char *atlasText = nullptr,
     const char *defaultSkin = nullptr,
     const char *defaultAnimation = nullptr,
     bool loop = false,
@@ -2634,7 +2637,8 @@ inline flatbuffers::Offset<SpineSkeleton> CreateSpineSkeletonDirect(flatbuffers:
     float timeScale = 1.0f,
     bool debugSlots = false,
     bool debugBones = false) {
-  return CreateSpineSkeleton(_fbb, node, jsonFile ? _fbb.CreateString(jsonFile) : 0, atlasFile ? _fbb.CreateString(atlasFile) : 0, defaultSkin ? _fbb.CreateString(defaultSkin) : 0, defaultAnimation ? _fbb.CreateString(defaultAnimation) : 0, loop, premultipliedAlpha, timeScale, debugSlots, debugBones);
+//return CreateSpineSkeleton(_fbb, node, jsonFile ? _fbb.CreateString(jsonFile) : 0, atlasFile ? _fbb.CreateString(atlasFile) : 0, defaultSkin ? _fbb.CreateString(defaultSkin) : 0, defaultAnimation ? _fbb.CreateString(defaultAnimation) : 0, loop, premultipliedAlpha, timeScale, debugSlots, debugBones);
+  return CreateSpineSkeleton(_fbb, node, jsonFile ? _fbb.CreateString(jsonFile) : 0, atlasText ? atlasText : 0, defaultSkin ? _fbb.CreateString(defaultSkin) : 0, defaultAnimation ? _fbb.CreateString(defaultAnimation) : 0, loop, premultipliedAlpha, timeScale, debugSlots, debugBones);
 }
 
 struct AnimationRef FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
