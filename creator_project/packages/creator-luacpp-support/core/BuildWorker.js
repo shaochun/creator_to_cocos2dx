@@ -32,6 +32,7 @@ class BuildWorker extends WorkerBase {
 
 		Utils.getAssetsInfo(function(uuidmap) {
 			let copyReourceInfos = this._convertFireToJson(uuidmap);
+			let copyReourceInfos_leon = this._convertFireToJson(uuidmap);
 			let dynamicLoadRes = this._getDynamicLoadRes(uuidmap);
 			Object.assign(copyReourceInfos, dynamicLoadRes);
 			this._compileJsonToBinary(function() {

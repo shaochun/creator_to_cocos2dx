@@ -327,7 +327,7 @@ table SpineSkeleton
     node:Node;
     jsonFile:string;
     atlasFile:string;
-    atlasText:string;
+//  atlasText:string; //leon
     defaultSkin:string;
     defaultAnimation:string;
     loop:bool;

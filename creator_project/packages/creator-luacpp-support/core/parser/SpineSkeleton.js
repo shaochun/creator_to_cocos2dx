@@ -18,10 +18,8 @@ class SpineSkeleton extends Node {
 
 		let path_info = get_spine_info_by_uuid(component._N$skeletonData.__uuid__);
 		this._properties.jsonFile = state._assetpath + path_info.relative_path;
+	//leon: atlas_url has bug
 	//	this._properties.atlasFile = state._assetpath + path_info.atlas_url.relative_path;
-	//	this._properties.atlasText = state._assetpath + path_info.atlas_text;
-		this._properties.atlasText = state._uuid[state._uuid + '-atlasText'];
-
 		this.add_property_str('defaultSkin', 'defaultSkin', component);
 		this.add_property_str('defaultAnimation', 'defaultAnimation', component);
 		this.add_property_bool('loop', 'loop', component);

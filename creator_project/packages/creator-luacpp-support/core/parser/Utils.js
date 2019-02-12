@@ -174,15 +174,11 @@ let get_spine_info_by_uuid = function (uuid) {
 			state._uuid[uuid] = {fullpath: fullpath, relative_path: current_dir + '/' + file};
 		});
 		
-		// get atlas path
-	//	state._uuid[uuid].atlas_url = get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__); //leon: original
-	
-	//	state._uuid[uuid].atlas_text = contents_json._atlasText; //leon
-		// add to _uuid to copy resources
-	//	state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;  //leon: original
-	//	state._uuid[uuid + '-atlas'] = state._uuid[uuid]._atlasText; //leon
-
-		state._uuid[uuid + '-atlasText'] = contents_json._atlasText; //leon
+	//leon: atlas_url has bug	
+	//	// get atlas path
+	//	state._uuid[uuid].atlas_url = get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__);
+	//	// add to _uuid to copy resources
+	//	state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;
 
 		// get textures path
 		for (let i = 0, len = contents_json.textures.length; i < len; ++i) {

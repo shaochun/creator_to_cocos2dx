@@ -2564,8 +2564,8 @@ struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.Verify(jsonFile()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASFILE) &&
            verifier.Verify(atlasFile()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASTEXT) &&
-           verifier.Verify(atlasText()) &&           
+        // VerifyField<flatbuffers::uoffset_t>(verifier, VT_ATLASTEXT) && //leon
+        // verifier.Verify(atlasText()) &&           
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTSKIN) &&
            verifier.Verify(defaultSkin()) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_DEFAULTANIMATION) &&
