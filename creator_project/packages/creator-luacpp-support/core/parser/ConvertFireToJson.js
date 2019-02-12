@@ -124,11 +124,11 @@ function parse_fire(filenames, assetpath, path_to_json_files, uuidmaps) {
 		parser.run(filename, assetpath, path_to_json_files)
 		for(let key in state._uuid) {
 
-			if (key == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
-			{
-				if (state._uuid.hasOwnProperty(key))
-					uuid[key] = state._uuid[key];
-			}
+			if (key == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110") //leon
+				console.log("say yes!");
+		
+			if (state._uuid.hasOwnProperty(key))
+				uuid[key] = state._uuid[key];
 		}
 	});
 	return uuid;

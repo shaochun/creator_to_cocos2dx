@@ -32,7 +32,7 @@ class BuildWorker extends WorkerBase {
 
 		Utils.getAssetsInfo(function(uuidmap) {
 			let copyReourceInfos = this._convertFireToJson(uuidmap);
-			let copyReourceInfos_leon = this._convertFireToJson(uuidmap);
+		//	let copyReourceInfos_leon = this._convertFireToJson(uuidmap);
 			let dynamicLoadRes = this._getDynamicLoadRes(uuidmap);
 			Object.assign(copyReourceInfos, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
@@ -110,6 +110,7 @@ class BuildWorker extends WorkerBase {
 					console.log("uuid includes -atlasText, skipped: " + uuid);
 				}
 				else {
+			
 					let pathInfo = copyReourceInfos[uuid];
 					let src = pathInfo.fullpath;
 					let dst = Path.join(resdst, pathInfo.relative_path);
