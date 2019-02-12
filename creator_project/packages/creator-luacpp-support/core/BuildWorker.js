@@ -31,9 +31,9 @@ class BuildWorker extends WorkerBase {
 		Fs.emptyDirSync(Constants.CCREATOR_PATH);
 
 		Utils.getAssetsInfo(function(uuidmap) {
-			let copyReourceInfos = this._convertFireToJson(uuidmap);
-		//	let copyReourceInfos_leon = this._convertFireToJson(uuidmap);
-			let dynamicLoadRes = this._getDynamicLoadRes(uuidmap);
+			let copyReourceInfos      = this._convertFireToJson(uuidmap);
+			let copyReourceInfos_leon = this._copyResourcesLeon(uuidmap);
+			let dynamicLoadRes        = this._getDynamicLoadRes(uuidmap);
 			Object.assign(copyReourceInfos, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
 				this._copyResources(copyReourceInfos);
@@ -51,6 +51,7 @@ class BuildWorker extends WorkerBase {
 		return copyReourceInfos;
 	}
 
+	// this is for "scene file" only (.fire)
 	// .json -> .ccreator
 	_compileJsonToBinary(cb) {
 		const jsonFiles = this._getJsonList();
@@ -71,6 +72,30 @@ class BuildWorker extends WorkerBase {
 			});
 		});
 	}
+
+
+	_copyResourcesLeon(uuidmap_) { //leon
+		let ress = {};
+		let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
+
+	//	Object.keys(uuidmap_).forEach(function(uuid) {
+	//		if(uuidmap_[uuid].indexOf(resourcesPath) < 0)
+	//			return true;
+	//		
+	//		ress[uuid] = parse_utils.get_relative_full_path_by_uuid(uuid);
+	//	});
+
+		Object.keys(uuidmap_).forEach(uuid => {
+		//d	console.log(uuid);
+		//!	if(uuidmap_[uuid].indexOf(resourcesPath) < 0) return true;
+			ress[uuid] = parse_utils.get_relative_full_atlas_path_by_uuid(uuid);
+		});
+
+		parse_utils.clean(ress);
+
+		return ress;	
+	}
+
 
 	_copyResources(copyReourceInfos) {
 		// should copy these resources
@@ -106,17 +131,16 @@ class BuildWorker extends WorkerBase {
 			// copy other resources
 			Object.keys(copyReourceInfos).forEach(function(uuid) {
 
-				if (uuid.includes("-atlasText")) {	//leon
-					console.log("uuid includes -atlasText, skipped: " + uuid);
-				}
-				else {
-			
+			//	if (uuid.includes("-atlasText")) {	//leon
+			//		console.log("uuid includes -atlasText, skipped: " + uuid);
+			//	}
+			//	else {
 					let pathInfo = copyReourceInfos[uuid];
 					let src = pathInfo.fullpath;
 					let dst = Path.join(resdst, pathInfo.relative_path);
 					Fs.ensureDirSync(Path.dirname(dst));
 					Fs.copySync(src, dst);
-				}
+			//	}
 			});
 		}
 
