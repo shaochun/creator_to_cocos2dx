@@ -27,8 +27,54 @@ let get_relative_full_path_by_uuid = function(uuid) {
 	return result;
 }
 
-//leon
-let get_relative_full_atlas_path_by_uuid = function(uuid) { //leon
+/**
+ * //leon: Get resource path by uuid, targeting .atlas files
+ * The return value:
+ * @fullpath: full path of the resource
+ * @relative_path: relative path to assets folder or creator default asset path
+ */
+let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
+
+	//leon: https://stackoverflow.com/a/15202003
+	function ContainsAny(str, items) {
+	    for(var i in items){
+	        var item = items[i];
+	        if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
+	            return true;
+	    }   }
+	    return false;
+	}
+
+	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
+		console.log("d hihihi atlas 1482");
+
+
+	let exts = ['.atlas', '.plist'];
+
+//	let rfp = get_relative_full_path_by_uuid(uuid);
+	let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
+
+//	if (fullpath.indexOf(".atlas") !== -1) //leon: !== means if contains string
+	if (ContainsAny(fullpath, exts)) //leon: !== means if contains string
+	{
+		let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
+		let root = mountInfo.path;
+
+		let relative_path = fullpath.substring(root.length + 1);
+
+		let result = {
+			fullpath: fullpath,
+			relative_path: relative_path
+		};
+
+		return result;
+	}
+
+	return undefined;
+}
+
+//----------------------------------------------------------
+let get_relative_full_particle_path_by_uuid = function(uuid) { //leon
 
 	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
 		console.log("d hihihi atlas 1482");
@@ -36,7 +82,7 @@ let get_relative_full_atlas_path_by_uuid = function(uuid) { //leon
 //	let rfp = get_relative_full_path_by_uuid(uuid);
 	let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
 
-	if (fullpath.indexOf(".atlas") !== -1) //leon: !== means if contains string
+	if (fullpath.indexOf("particle") !== -1 && fullpath.indexOf(".plist") !== -1) //leon: !== means if contains string
 	{
 		let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
 		let root = mountInfo.path;
@@ -358,16 +404,17 @@ function clean(obj) {
 }
 
 module.exports = {
-	get_relative_full_path_by_uuid: get_relative_full_path_by_uuid,
-	get_relative_full_atlas_path_by_uuid: get_relative_full_atlas_path_by_uuid,
-	get_sprite_frame_name_by_uuid: get_sprite_frame_name_by_uuid,
-	get_font_path_by_uuid: get_font_path_by_uuid,
-	get_spine_info_by_uuid: get_spine_info_by_uuid,
-	get_tiledmap_path_by_uuid: get_tiledmap_path_by_uuid,
-	create_node: create_node,
-	log: log,
-	remove_child_by_id: remove_child_by_id,
-	get_sprite_frame_json_by_uuid: get_sprite_frame_json_by_uuid,
-	is_sprite_frame_from_texture_packer: is_sprite_frame_from_texture_packer,
-	clean: clean,
+	get_relative_full_path_by_uuid          : get_relative_full_path_by_uuid,
+//	get_relative_full_atlas_path_by_uuid    : get_relative_full_atlas_path_by_uuid,
+	get_relative_full_leon_resources_path_by_uuid : get_relative_full_leon_resources_path_by_uuid,
+	get_sprite_frame_name_by_uuid           : get_sprite_frame_name_by_uuid,
+	get_font_path_by_uuid                   : get_font_path_by_uuid,
+	get_spine_info_by_uuid                  : get_spine_info_by_uuid,
+	get_tiledmap_path_by_uuid               : get_tiledmap_path_by_uuid,
+	create_node                             : create_node,
+	log                                     : log,
+	remove_child_by_id                      : remove_child_by_id,
+	get_sprite_frame_json_by_uuid           : get_sprite_frame_json_by_uuid,
+	is_sprite_frame_from_texture_packer     : is_sprite_frame_from_texture_packer,
+	clean                                   : clean,
 }

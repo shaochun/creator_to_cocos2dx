@@ -32,15 +32,16 @@ class BuildWorker extends WorkerBase {
 
 		Utils.getAssetsInfo(function(uuidmap) {
 			let copyReourceInfos      = this._convertFireToJson(uuidmap);
-			let copyReourceInfos_leon = this._copyResourcesLeon(uuidmap);
 			let dynamicLoadRes        = this._getDynamicLoadRes(uuidmap);
 			Object.assign(copyReourceInfos, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
 				this._copyResources(copyReourceInfos);
+				this._copyResourcesLeon(uuidmap);			//leon: copy spine atlas files
 				Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
 				this._callback();
 				Utils.log('[creator-luacpp-support] build end');
 			}.bind(this));
+
 		}.bind(this));
 	}
 
@@ -75,27 +76,112 @@ class BuildWorker extends WorkerBase {
 
 
 	_copyResourcesLeon(uuidmap_) { //leon
-		let ress = {};
+
+		let result = {};
 		let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
 
 	//	Object.keys(uuidmap_).forEach(function(uuid) {
 	//		if(uuidmap_[uuid].indexOf(resourcesPath) < 0)
 	//			return true;
 	//		
-	//		ress[uuid] = parse_utils.get_relative_full_path_by_uuid(uuid);
+	//		result[uuid] = parse_utils.get_relative_full_path_by_uuid(uuid);
 	//	});
 
 		Object.keys(uuidmap_).forEach(uuid => {
 		//d	console.log(uuid);
 		//!	if(uuidmap_[uuid].indexOf(resourcesPath) < 0) return true;
-			ress[uuid] = parse_utils.get_relative_full_atlas_path_by_uuid(uuid);
+		//	result[uuid] = parse_utils.get_relative_full_atlas_path_by_uuid(uuid);
+			result[uuid] = parse_utils.get_relative_full_leon_resources_path_by_uuid(uuid);
 		});
 
-		parse_utils.clean(ress);
+		parse_utils.clean(result);	//leon: remove null/undefined attributes
+	//d	return result;	
 
-		return ress;	
+		Object.keys(result).forEach(uuid => {
+			let projectRoot = this._state.path;
+			let resdst = Path.join(projectRoot, 'Resources');
+			    resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
+			let pathInfo = result[uuid];
+
+			// update particle .plist file with textFileName key
+			let new_particle_plist_str = this._updateParticleFileWithTextureFileNameKey(pathInfo);
+
+			// copy 
+			let src = pathInfo.fullpath;
+			let dst = Path.join(resdst, pathInfo.relative_path);
+			Fs.ensureDirSync(Path.dirname(dst));
+			Fs.copySync(src, dst);
+
+			Fs.write
+		});
+
+		console.log("bp");
 	}
 
+	_findfindfind(spriteFrameUuids_) {
+		for (let i=0; i<spriteFrameUuids_.length; i++)
+		{
+			if (spriteFrameUuids_[i].innerHTML === "spriteFrameUuids")
+				return spriteFrameUuids_[i];
+		}
+		return null;		
+	}
+
+	_updateParticleFileWithTextureFileNameKey(pathInfo_) {
+
+		//https://www.w3schools.com/xml/xml_parser.asp
+	//d	let text = 	"<bookstore><book>" +
+	//d				"<title>Everyday Italian</title>" +
+	//d				"<author>Giada De Laurentiis</author>" +
+	//d				"<year>2005</year>" +
+	//d				"</book></bookstore>";
+
+
+		// read plist file
+		let plist_text = Fs.readFileSync(
+		//	"D:/W-/20190122-cocoscreator-export-for-c/01-particle/Resources/creator/Particle/fire01.plist",
+			pathInfo_.fullpath,
+			{encoding: 'utf8', flag: 'r'}
+		);
+
+		let parser = new DOMParser();
+		let xmlDoc = parser.parseFromString(plist_text, "text/xml");
+
+		// get texture realpath
+		let spriteFrameUuids = xmlDoc.getElementsByTagName("key");
+	//	let index_sprite = 
+	//	for (
+
+		
+		let spriteFrameUuidNode = this._findfindfind(spriteFrameUuids);
+	//	let nextNode = spriteFrameUuidNode.nextElementSibling;
+
+		if (spriteFrameUuidNode)
+		{
+			let nextNode = spriteFrameUuidNode.nextSibling.innerText;
+
+			// modify plist file
+			let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
+
+			let newEle1 =  xmlDoc.createElement("key");
+			let newText1 = xmlDoc.createTextNode("textureFileName");
+			newEle1.appendChild(newText1);
+			x_dict0.appendChild(newEle1);
+
+			let newEle2 =  xmlDoc.createElement("string");
+		//	let newText2 = xmlDoc.createTextNode("texture/path/xxx.png");
+			let newText2 = xmlDoc.createTextNode(spriteFrameUuidNode.nextElementSibling.innerText);
+			newEle2.appendChild(newText2);
+			x_dict0.appendChild(newEle2);
+
+
+			let oSerializer = new XMLSerializer();
+			let sXML = oSerializer.serializeToString(xmlDoc);
+			return sXML;
+		}
+
+		return null;
+	}
 
 	_copyResources(copyReourceInfos) {
 		// should copy these resources
