@@ -57,21 +57,45 @@ let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
 //	if (fullpath.indexOf(".atlas") !== -1) //leon: !== means if contains string
 	if (ContainsAny(fullpath, exts)) //leon: !== means if contains string
 	{
-		let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
-		let root = mountInfo.path;
-
-		let relative_path = fullpath.substring(root.length + 1);
-
-		let result = {
-			fullpath: fullpath,
-			relative_path: relative_path
-		};
-
-		return result;
+	//	let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
+	//	let root = mountInfo.path;
+	//	
+	//	let relative_path = fullpath.substring(root.length + 1);
+	//	
+	//	let result = {
+	//		fullpath: fullpath,
+	//		relative_path: relative_path
+	//	};
+	//	
+	//	return result;
+		return get_resource_fullpath_from_uuid(uuid, fullpath);
 	}
 
 	return undefined;
 }
+
+
+//----------------------------------------------------------
+let get_resource_fullpath_from_uuid = function(uuid, fullpath) {	//leon
+
+	//fullpath
+	//https://stackoverflow.com/a/894877
+	fullpath = typeof fullpath !== 'undefined' ? fullpath : Editor.remote.assetdb.uuidToFspath(uuid);
+
+	//relative path
+	let mountInfo     = Editor.remote.assetdb.mountInfoByUuid(uuid);
+	let root          = mountInfo.path;
+	let relative_path = fullpath.substring(root.length + 1);
+
+	//bundle them together
+	let result = {
+		fullpath: 		fullpath,
+		relative_path: 	relative_path
+	};
+
+	return result;
+}
+
 
 //----------------------------------------------------------
 let get_relative_full_particle_path_by_uuid = function(uuid) { //leon
@@ -405,8 +429,8 @@ function clean(obj) {
 
 module.exports = {
 	get_relative_full_path_by_uuid          : get_relative_full_path_by_uuid,
-//	get_relative_full_atlas_path_by_uuid    : get_relative_full_atlas_path_by_uuid,
-	get_relative_full_leon_resources_path_by_uuid : get_relative_full_leon_resources_path_by_uuid,
+	get_resource_fullpath_from_uuid			: get_resource_fullpath_from_uuid,						//leon
+	get_relative_full_leon_resources_path_by_uuid : get_relative_full_leon_resources_path_by_uuid,	//leon
 	get_sprite_frame_name_by_uuid           : get_sprite_frame_name_by_uuid,
 	get_font_path_by_uuid                   : get_font_path_by_uuid,
 	get_spine_info_by_uuid                  : get_spine_info_by_uuid,

@@ -118,7 +118,8 @@ class BuildWorker extends WorkerBase {
 		console.log("bp");
 	}
 
-	_findfindfind(spriteFrameUuids_) {
+	//leon: inner function: find spriteFrameUuid node among spriteFrameUuids list
+	__findfindfind(spriteFrameUuids_) {
 		for (let i=0; i<spriteFrameUuids_.length; i++)
 		{
 			if (spriteFrameUuids_[i].innerHTML === "spriteFrameUuids")
@@ -149,38 +150,36 @@ class BuildWorker extends WorkerBase {
 
 		// get texture realpath
 		let spriteFrameUuids = xmlDoc.getElementsByTagName("key");
-	//	let index_sprite = 
-	//	for (
-
-		
-		let spriteFrameUuidNode = this._findfindfind(spriteFrameUuids);
-	//	let nextNode = spriteFrameUuidNode.nextElementSibling;
+		let spriteFrameUuidNode = this.__findfindfind(spriteFrameUuids);
 
 		if (spriteFrameUuidNode)
 		{
-			let nextNode = spriteFrameUuidNode.nextSibling.innerText;
-
-			// modify plist file
-			let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
-
-			let newEle1 =  xmlDoc.createElement("key");
-			let newText1 = xmlDoc.createTextNode("textureFileName");
-			newEle1.appendChild(newText1);
-			x_dict0.appendChild(newEle1);
-
-			let newEle2 =  xmlDoc.createElement("string");
-		//	let newText2 = xmlDoc.createTextNode("texture/path/xxx.png");
-			let newText2 = xmlDoc.createTextNode(spriteFrameUuidNode.nextElementSibling.innerText);
-			newEle2.appendChild(newText2);
-			x_dict0.appendChild(newEle2);
-
-
-			let oSerializer = new XMLSerializer();
-			let sXML = oSerializer.serializeToString(xmlDoc);
-			return sXML;
+			let a = Utils.get_resource_fullpath_from_uuid(spriteFrameUuidNode.innerText);
+			console.log("bp");
 		}
 
-		return null;
+	//	{
+	//		let nextNode = spriteFrameUuidNode.nextSibling.innerText;
+	//		
+	//		// modify plist file
+	//		let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
+	//		
+	//		let newEle1 =  xmlDoc.createElement("key");
+	//		let newText1 = xmlDoc.createTextNode("textureFileName");
+	//		newEle1.appendChild(newText1);
+	//		x_dict0.appendChild(newEle1);
+	//		
+	//		let newEle2 =  xmlDoc.createElement("string");
+	//	//	let newText2 = xmlDoc.createTextNode("texture/path/xxx.png");
+	//		let newText2 = xmlDoc.createTextNode(spriteFrameUuidNode.nextElementSibling.innerText);
+	//		newEle2.appendChild(newText2);
+	//		x_dict0.appendChild(newEle2);
+	//		
+	//		let oSerializer = new XMLSerializer();
+	//		let sXML = oSerializer.serializeToString(xmlDoc);
+	//		return sXML;
+	//	}
+	//	return null;
 	}
 
 	_copyResources(copyReourceInfos) {
