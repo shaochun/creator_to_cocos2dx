@@ -106,13 +106,18 @@ class BuildWorker extends WorkerBase {
 			// update particle .plist file with textFileName key
 			let new_particle_plist_str = this._updateParticleFileWithTextureFileNameKey(pathInfo);
 
-			// copy 
-			let src = pathInfo.fullpath;
-			let dst = Path.join(resdst, pathInfo.relative_path);
-			Fs.ensureDirSync(Path.dirname(dst));
-			Fs.copySync(src, dst);
+			//write updated particle .plist string to dst-file
+			if (new_particle_plist_str !== null)
+			{
+				// copy 
+				let src = pathInfo.fullpath;
+				let dst = Path.join(resdst, pathInfo.relative_path);
+				Fs.ensureDirSync(Path.dirname(dst));
+			//	Fs.copySync(src, dst);
+				Fs.writeFileSync(dst, new_particle_plist_str, {encoding: 'utf8'});
 
-			Fs.write
+				console.log("particle texture " + uuid + " sucessfully modified.");
+			}
 		});
 
 		console.log("bp");
@@ -122,12 +127,13 @@ class BuildWorker extends WorkerBase {
 	__findfindfind(spriteFrameUuids_) {
 		for (let i=0; i<spriteFrameUuids_.length; i++)
 		{
-			if (spriteFrameUuids_[i].innerHTML === "spriteFrameUuids")
+			if (spriteFrameUuids_[i].innerHTML === "spriteFrameUuid")
 				return spriteFrameUuids_[i];
 		}
 		return null;		
 	}
 
+	//leon: return a new .plist xml string with updated-texture-filepath from uuid
 	_updateParticleFileWithTextureFileNameKey(pathInfo_) {
 
 		//https://www.w3schools.com/xml/xml_parser.asp
@@ -148,19 +154,27 @@ class BuildWorker extends WorkerBase {
 		let parser = new DOMParser();
 		let xmlDoc = parser.parseFromString(plist_text, "text/xml");
 
-		// get texture realpath
+		// get spriteframeUuid
 		let spriteFrameUuids = xmlDoc.getElementsByTagName("key");
 		let spriteFrameUuidNode = this.__findfindfind(spriteFrameUuids);
 
+
+		// find texture realpath from uuid
 		if (spriteFrameUuidNode)
 		{
-			let a = Utils.get_resource_fullpath_from_uuid(spriteFrameUuidNode.innerText);
+			let nextNode = spriteFrameUuidNode.nextElementSibling;
+
+		//	let texture_uuid = parse_utils.get_resource_fullpath_from_uuid(nextNode.innerHTML);
+			let texture_uuid = parse_utils.get_relative_full_path_by_uuid(nextNode.innerHTML);
+
+			//leon: don't know why. dirty patch
+			texture_uuid.fullpath = parse_utils.fixFullpath(texture_uuid.fullpath);
+			texture_uuid.relative_path = parse_utils.fixFullpath(texture_uuid.relative_path);
 			console.log("bp");
-		}
+
+			return texture_uuid;
 
 	//	{
-	//		let nextNode = spriteFrameUuidNode.nextSibling.innerText;
-	//		
 	//		// modify plist file
 	//		let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
 	//		
@@ -179,7 +193,10 @@ class BuildWorker extends WorkerBase {
 	//		let sXML = oSerializer.serializeToString(xmlDoc);
 	//		return sXML;
 	//	}
-	//	return null;
+
+		}
+
+		return null;
 	}
 
 	_copyResources(copyReourceInfos) {

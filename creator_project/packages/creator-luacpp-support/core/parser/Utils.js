@@ -27,6 +27,15 @@ let get_relative_full_path_by_uuid = function(uuid) {
 	return result;
 }
 
+//leon
+let fixFullpath = function(fullpath) {
+//	count   = (fullpath.match(/\\/g) || []).length
+
+	position = fullpath.lastIndexOf('\\');
+	fixpath = fullpath.substring(0, position);
+	return fixpath;
+}
+
 /**
  * //leon: Get resource path by uuid, targeting .atlas files
  * The return value:
@@ -68,7 +77,8 @@ let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
 	//	};
 	//	
 	//	return result;
-		return get_resource_fullpath_from_uuid(uuid, fullpath);
+	//	return get_resource_fullpath_from_uuid(uuid, fullpath);
+		return get_relative_full_path_by_uuid(uuid, fullpath);
 	}
 
 	return undefined;
@@ -76,11 +86,14 @@ let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
 
 
 //----------------------------------------------------------
-let get_resource_fullpath_from_uuid = function(uuid, fullpath) {	//leon
+//leon: param: fullpath is optional
+let get_resource_fullpath_from_uuid = function(uuid, fullpath = null) {	//leon
 
 	//fullpath
-	//https://stackoverflow.com/a/894877
-	fullpath = typeof fullpath !== 'undefined' ? fullpath : Editor.remote.assetdb.uuidToFspath(uuid);
+	//https://stackoverflow.com/a/894877 (originally null is 'undefined')
+//	fullpath = typeof fullpath !== null ? fullpath : Editor.remote.assetdb.uuidToFspath(uuid);
+	fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
+
 
 	//relative path
 	let mountInfo     = Editor.remote.assetdb.mountInfoByUuid(uuid);
@@ -429,8 +442,9 @@ function clean(obj) {
 
 module.exports = {
 	get_relative_full_path_by_uuid          : get_relative_full_path_by_uuid,
-	get_resource_fullpath_from_uuid			: get_resource_fullpath_from_uuid,						//leon
+//	get_resource_fullpath_from_uuid			: get_resource_fullpath_from_uuid,						//leon
 	get_relative_full_leon_resources_path_by_uuid : get_relative_full_leon_resources_path_by_uuid,	//leon
+	fixFullpath 							: fixFullpath,											//leon
 	get_sprite_frame_name_by_uuid           : get_sprite_frame_name_by_uuid,
 	get_font_path_by_uuid                   : get_font_path_by_uuid,
 	get_spine_info_by_uuid                  : get_spine_info_by_uuid,
