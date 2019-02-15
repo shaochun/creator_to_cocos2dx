@@ -29,11 +29,45 @@ let get_relative_full_path_by_uuid = function(uuid) {
 
 //leon
 let fixFullpath = function(fullpath) {
+	console.log("fixFullpath: Entering...");
+
 //	count   = (fullpath.match(/\\/g) || []).length
 
-	position = fullpath.lastIndexOf('\\');
-	fixpath = fullpath.substring(0, position);
-	return fixpath;
+//	position = fullpath.lastIndexOf('\\');
+//	fixpath = fullpath.substring(0, position);
+//	return fixpath;
+
+//	let a = "D:\\W\\yoozoo\\tasks\\20190107-cocoscreator\\third\\assets\\Texture\\1st\\light-particle-alpha.png\\light-particle-alpha"
+
+	console.log("* " + fullpath)
+
+	let match_result = fullpath.match( /([\w-]+)\.png/ ); // [0] light-particle-alpha.png [1] light-particle-alpha
+
+//	let b = match_result[0]; //found light-particle-alpha.png
+//	b = b.substring(0, b.length-4); //remove .png suffix
+//	console.log("* " + b) //light-particle-alpha
+
+	let b = match_result[1]; //light-particle-alpha
+	console.log("* " + b) //light-particle-alpha
+
+
+	//若找到兩次
+	let re = new RegExp(b, "g");
+	let count = (fullpath.match(re) || []).length;
+	if (count > 1)
+	{
+		//$('#msg').html("hehe")
+		let patched_fullpath = fullpath.substring(0, fullpath.length-b.length-1); // 移除第二個(末端)light-particle-alpha. -1 remove the suffix-backslash
+		console.log("* patched: " + patched_fullpath)
+
+		return patched_fullpath;
+	}
+
+	console.log("* unchanged: " + fullpath)
+	return fullpath;
+
+	console.log("fixFullpath: Exit.");
+
 }
 
 /**
@@ -46,12 +80,12 @@ let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
 
 	//leon: https://stackoverflow.com/a/15202003
 	function ContainsAny(str, items) {
-	    for(var i in items){
-	        var item = items[i];
-	        if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
-	            return true;
-	    }   }
-	    return false;
+		for(var i in items){
+			var item = items[i];
+			if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
+				return true;
+		}   }
+		return false;
 	}
 
 	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
@@ -111,6 +145,7 @@ let get_resource_fullpath_from_uuid = function(uuid, fullpath = null) {	//leon
 
 
 //----------------------------------------------------------
+//leon: for now we only handle particle .plist
 let get_relative_full_particle_path_by_uuid = function(uuid) { //leon
 
 	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
@@ -434,9 +469,9 @@ let remove_child_by_id = function (node, id) {
 //https://stackoverflow.com/a/286162
 function clean(obj) {
   for (var propName in obj) { 
-    if (obj[propName] === null || obj[propName] === undefined) {
-      delete obj[propName];
-    }
+	if (obj[propName] === null || obj[propName] === undefined) {
+	  delete obj[propName];
+	}
   }
 }
 
