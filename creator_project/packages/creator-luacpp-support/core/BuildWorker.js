@@ -144,7 +144,7 @@ class BuildWorker extends WorkerBase {
 	//d				"</book></bookstore>";
 
 
-		// read plist file
+		/// READ PLIST FILE
 		let plist_text = Fs.readFileSync(
 		//	"D:/W-/20190122-cocoscreator-export-for-c/01-particle/Resources/creator/Particle/fire01.plist",
 			pathInfo_.fullpath,
@@ -154,12 +154,12 @@ class BuildWorker extends WorkerBase {
 		let parser = new DOMParser();
 		let xmlDoc = parser.parseFromString(plist_text, "text/xml");
 
-		// get spriteframeUuid
+		/// GET SPRITEFRAMEUUID
 		let spriteFrameUuids = xmlDoc.getElementsByTagName("key");
 		let spriteFrameUuidNode = this.__findfindfind(spriteFrameUuids);
 
 
-		// find texture realpath from uuid
+		/// FIND TEXTURE REALPATH FROM UUID
 		if (spriteFrameUuidNode)
 		{
 			let nextNode = spriteFrameUuidNode.nextElementSibling;
@@ -170,30 +170,29 @@ class BuildWorker extends WorkerBase {
 			//leon: don't know why. dirty patch
 			texture_uuid.fullpath = parse_utils.fixFullpath(texture_uuid.fullpath);
 			texture_uuid.relative_path = parse_utils.fixFullpath(texture_uuid.relative_path);
+			let relative_path_forwardslash = texture_uuid.relative_path.replace(/\\/g, '/');
 			console.log("bp");
 
-			return texture_uuid;
+		//d	return texture_uuid;	//good
 
-	//	{
-	//		// modify plist file
-	//		let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
-	//		
-	//		let newEle1 =  xmlDoc.createElement("key");
-	//		let newText1 = xmlDoc.createTextNode("textureFileName");
-	//		newEle1.appendChild(newText1);
-	//		x_dict0.appendChild(newEle1);
-	//		
-	//		let newEle2 =  xmlDoc.createElement("string");
-	//	//	let newText2 = xmlDoc.createTextNode("texture/path/xxx.png");
-	//		let newText2 = xmlDoc.createTextNode(spriteFrameUuidNode.nextElementSibling.innerText);
-	//		newEle2.appendChild(newText2);
-	//		x_dict0.appendChild(newEle2);
-	//		
-	//		let oSerializer = new XMLSerializer();
-	//		let sXML = oSerializer.serializeToString(xmlDoc);
-	//		return sXML;
-	//	}
-
+			/// MODIFY PLIST FILE
+			let x_dict0 = xmlDoc.getElementsByTagName("dict")[0];
+			
+			let newEle1 =  xmlDoc.createElement("key");
+			let newText1 = xmlDoc.createTextNode("textureFileName");
+			newEle1.appendChild(newText1);
+			x_dict0.appendChild(newEle1);
+			
+			let newEle2 =  xmlDoc.createElement("string");
+		//	let newText2 = xmlDoc.createTextNode("texture/path/xxx.png");
+		//	let newText2 = xmlDoc.createTextNode(spriteFrameUuidNode.nextElementSibling.innerText);
+			let newText2 = xmlDoc.createTextNode(relative_path_forwardslash);
+			newEle2.appendChild(newText2);
+			x_dict0.appendChild(newEle2);
+			
+			let oSerializer = new XMLSerializer();
+			let sXML = oSerializer.serializeToString(xmlDoc);
+			return sXML;
 		}
 
 		return null;
