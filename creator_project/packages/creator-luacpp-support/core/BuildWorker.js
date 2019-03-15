@@ -16,6 +16,8 @@ const {WorkerBase, registerWorker} = require('./WorkerBase');
 
 const plugin_profile = 'profile://project/creator-luacpp-support.json';
 
+const vkbeautify = require('./leon/vkbeautify.0.99.3.js');
+
 class BuildWorker extends WorkerBase {
 	run(state, callback) {
 		Utils.recordBuild();
@@ -33,10 +35,11 @@ class BuildWorker extends WorkerBase {
 		Utils.getAssetsInfo(function(uuidmap) {
 			let copyReourceInfos      = this._convertFireToJson(uuidmap);
 			let dynamicLoadRes        = this._getDynamicLoadRes(uuidmap);
-			Object.assign(copyReourceInfos, dynamicLoadRes);
+			Object.assign(copyReourceInfos.theUuids, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
-				this._copyResources(copyReourceInfos);
-				this._copyResourcesLeon(uuidmap);			//leon: copy spine atlas files
+				this._copyResources(copyReourceInfos.theUuids);
+				this._copyResourcesLeon(uuidmap, copyReourceInfos.particleSpriteFrames);			//leon: copy spine atlas files
+				this._copyResourcesParticleSpriteFrames(copyReourceInfos.particleSpriteFrames);		//leon: copy spine atlas files
 				Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
 				this._callback();
 				Utils.log('[creator-luacpp-support] build end');
@@ -74,11 +77,52 @@ class BuildWorker extends WorkerBase {
 		});
 	}
 
+	_copyResourcesParticleSpriteFrames(particleSpriteFrames_) { //leon
+		let result = {};
+		
+		Object.keys(particleSpriteFrames_).forEach(sf_id => {
+			console.log(sf_id);
+			console.log(particleSpriteFrames_[sf_id].__uuid__);
+			result[particleSpriteFrames_[sf_id].__uuid__] = parse_utils.get_relative_full_leon_resources_path_by_uuid(particleSpriteFrames_[sf_id].__uuid__, ['.png']);
+		});	
+		
+		parse_utils.clean(result);	//leon: remove null/undefined attributes
+
+	//leon: 好像不需要了。。。喵？？	
+	//	//leon: clean up path. don't know why. dirty patch
+	//	Object.keys(result).forEach( data => {
+	//		let texture_uuid = result[data];
+	//		texture_uuid.fullpath = parse_utils.fixFullpath(texture_uuid.fullpath);
+	//		texture_uuid.relative_path = parse_utils.fixFullpath(texture_uuid.relative_path);
+	//		let FINAL_relative_path_forwardslash = texture_uuid.relative_path.replace(/\\/g, '/');
+	//		console.log("bp");
+	//	});
+
+			let projectRoot = this._state.path;
+			let resdst = Path.join(projectRoot, 'Resources');
+			    resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
+
+		Object.keys(result).forEach(uuid_key => {
+			
+			let pathInfo = result[uuid_key];
+
+			let src = pathInfo.fullpath;
+			let dst = Path.join(resdst, pathInfo.relative_path);
+
+			Fs.ensureDirSync(Path.dirname(dst));
+			Fs.copySync(src, dst);
+
+			console.log("particle texture " + uuid_key + " sucessfully copied.");
+		});
+
+	}
 
 	_copyResourcesLeon(uuidmap_) { //leon
 
 		let result = {};
 		let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
+
+		let result_particle_textures = {};
 
 	//	Object.keys(uuidmap_).forEach(function(uuid) {
 	//		if(uuidmap_[uuid].indexOf(resourcesPath) < 0)
@@ -91,8 +135,11 @@ class BuildWorker extends WorkerBase {
 		//d	console.log(uuid);
 		//!	if(uuidmap_[uuid].indexOf(resourcesPath) < 0) return true;
 		//	result[uuid] = parse_utils.get_relative_full_atlas_path_by_uuid(uuid);
-			result[uuid] = parse_utils.get_relative_full_leon_resources_path_by_uuid(uuid);
+			result[uuid] = parse_utils.get_relative_full_leon_resources_path_by_uuid(uuid, ['.atlas', '.plist']);
+		//x	result_particle_textures[uuid] = parse_utils.get
 		});
+
+	
 
 		parse_utils.clean(result);	//leon: remove null/undefined attributes
 	//d	return result;	
@@ -192,7 +239,9 @@ class BuildWorker extends WorkerBase {
 			
 			let oSerializer = new XMLSerializer();
 			let sXML = oSerializer.serializeToString(xmlDoc);
-			return sXML;
+			let vkb_sXML = vkbeautify.xml(sXML, 4);
+			// return sXML;
+			return vkb_sXML;
 		}
 
 		return null;

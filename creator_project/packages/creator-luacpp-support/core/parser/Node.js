@@ -1,7 +1,7 @@
-const state = require('./Global').state;
+const state    = require('./Global').state;
 const Collider = require('./Collider');
-let Utils = require('./Utils');
-const fs = require('fs');
+let Utils      = require('./Utils');
+const fs       = require('fs');
 
 class Node {
 
@@ -276,7 +276,6 @@ class Node {
                 addProp(props, 'skewX', result, 'skewX');
                 addProp(props, 'skewY', result, 'skewY');
                 addProp(props, 'opacity', result, 'opacity');
-                
 
                 // position -> {x:, y:, curveType?, curveData?}
                 if (props.position) {

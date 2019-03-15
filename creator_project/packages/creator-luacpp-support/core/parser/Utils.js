@@ -15,6 +15,10 @@ let get_relative_full_path_by_uuid = function(uuid) {
 		return state._uuid[uuid];
 	let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
 	let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
+
+	if (fullpath == null)  Utils.log("fullpath null:  make sure particle in component is 'exported' back to plist file.");
+	if (mountInfo == null) Utils.log("mountInfo null: make sure particle in component is 'exported' back to plist file.");
+
 	let root = mountInfo.path;
 	let relative_path = fullpath.substring(root.length + 1);
 
@@ -76,12 +80,17 @@ let fixFullpath = function(fullpath) {
  * @fullpath: full path of the resource
  * @relative_path: relative path to assets folder or creator default asset path
  */
-let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
+
+let get_relative_full_leon_particle_textures_by_uuid = (uuid) => {
+}
+
+
+let get_relative_full_leon_resources_path_by_uuid = (uuid, exts) => { //leon
 
 	//leon: https://stackoverflow.com/a/15202003
 	function ContainsAny(str, items) {
-		for(var i in items){
-			var item = items[i];
+		for(let i in items){
+			let item = items[i];
 			if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
 				return true;
 		}   }
@@ -91,8 +100,8 @@ let get_relative_full_leon_resources_path_by_uuid = function(uuid) { //leon
 	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
 		console.log("d hihihi atlas 1482");
 
-
-	let exts = ['.atlas', '.plist'];
+	//this is specifically for spine assets
+//	let exts = ['.atlas', '.plist'];
 
 //	let rfp = get_relative_full_path_by_uuid(uuid);
 	let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
@@ -476,18 +485,19 @@ function clean(obj) {
 }
 
 module.exports = {
-	get_relative_full_path_by_uuid          : get_relative_full_path_by_uuid,
-//	get_resource_fullpath_from_uuid			: get_resource_fullpath_from_uuid,						//leon
-	get_relative_full_leon_resources_path_by_uuid : get_relative_full_leon_resources_path_by_uuid,	//leon
-	fixFullpath 							: fixFullpath,											//leon
-	get_sprite_frame_name_by_uuid           : get_sprite_frame_name_by_uuid,
-	get_font_path_by_uuid                   : get_font_path_by_uuid,
-	get_spine_info_by_uuid                  : get_spine_info_by_uuid,
-	get_tiledmap_path_by_uuid               : get_tiledmap_path_by_uuid,
-	create_node                             : create_node,
-	log                                     : log,
-	remove_child_by_id                      : remove_child_by_id,
-	get_sprite_frame_json_by_uuid           : get_sprite_frame_json_by_uuid,
-	is_sprite_frame_from_texture_packer     : is_sprite_frame_from_texture_packer,
-	clean                                   : clean,
+	get_relative_full_path_by_uuid          			: get_relative_full_path_by_uuid,
+//	get_resource_fullpath_from_uuid						: get_resource_fullpath_from_uuid,						//leon
+	get_relative_full_leon_resources_path_by_uuid 		: get_relative_full_leon_resources_path_by_uuid,	//leon
+	get_relative_full_leon_particle_textures_by_uuid 	: get_relative_full_leon_particle_textures_by_uuid,
+	fixFullpath 										: fixFullpath,											//leon
+	get_sprite_frame_name_by_uuid           			: get_sprite_frame_name_by_uuid,
+	get_font_path_by_uuid                   			: get_font_path_by_uuid,
+	get_spine_info_by_uuid                  			: get_spine_info_by_uuid,
+	get_tiledmap_path_by_uuid               			: get_tiledmap_path_by_uuid,
+	create_node                             			: create_node,
+	log                                     			: log,
+	remove_child_by_id                      			: remove_child_by_id,
+	get_sprite_frame_json_by_uuid           			: get_sprite_frame_json_by_uuid,
+	is_sprite_frame_from_texture_packer     			: is_sprite_frame_from_texture_packer,
+	clean                                   			: clean,
 }

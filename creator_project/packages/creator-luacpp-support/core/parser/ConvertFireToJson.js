@@ -107,7 +107,19 @@ class FireParser {
 				fs.writeSync(this._json_file, dump);
 				fs.close(this._json_file);
 			}
+
+			//leon: collect particle's sprite frames
+			else if (obj.__type__ === 'cc.ParticleSystem')
+			{
+				state._particle_sprite_frames[obj._id] = obj._spriteFrame;
+			}
 		});
+	}
+
+	//leon: execute this only after 'run'
+	getParticleSpriteFrames()
+	{
+		return state._particle_sprite_frames;
 	}
 }
 
@@ -118,10 +130,13 @@ function parse_fire(filenames, assetpath, path_to_json_files, uuidmaps) {
 	uuidinfos = uuidmaps;
 
 	let uuid = {};
+	let particleSpriteFrames = {}; //leon
+
 	filenames.forEach(function(filename) {
 		state.reset();
 		let parser = new FireParser();
-		parser.run(filename, assetpath, path_to_json_files)
+		parser.run(filename, assetpath, path_to_json_files);
+		particleSpriteFrames = parser.getParticleSpriteFrames(); //leon
 		for(let key in state._uuid) {
 
 			if (key == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110") //leon
@@ -131,7 +146,7 @@ function parse_fire(filenames, assetpath, path_to_json_files, uuidmaps) {
 				uuid[key] = state._uuid[key];
 		}
 	});
-	return uuid;
+	return {theUuids: uuid, particleSpriteFrames: particleSpriteFrames};
 }
 
 module.exports = parse_fire;

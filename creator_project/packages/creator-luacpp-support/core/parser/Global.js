@@ -19,6 +19,9 @@ class State {
         // key is uuid, value is the information of the sprite frame
         this._sprite_frames = {};
 
+        //leon: record all particle sprite frames
+        this._particle_sprite_frames = {};
+
         // contains all resource paths
         // key is uuid, value is { relative_path: '', full_path: '' }
         // need to use the information to copy resources
