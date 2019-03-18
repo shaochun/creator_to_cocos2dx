@@ -38,7 +38,7 @@ class BuildWorker extends WorkerBase {
 			Object.assign(copyReourceInfos.theUuids, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
 				this._copyResources(copyReourceInfos.theUuids);
-				this._copyResourcesLeon(uuidmap, copyReourceInfos.particleSpriteFrames);			//leon: copy spine atlas files
+				this._appendResourcesParticleWithTextureNameKey(uuidmap, copyReourceInfos.particleSpriteFrames);			//leon: copy spine atlas files
 				this._copyResourcesParticleSpriteFrames(copyReourceInfos.particleSpriteFrames);		//leon: copy spine atlas files
 				Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
 				this._callback();
@@ -77,6 +77,7 @@ class BuildWorker extends WorkerBase {
 		});
 	}
 
+	//leon: copy particle資源「內」使用到的 貼圖.
 	_copyResourcesParticleSpriteFrames(particleSpriteFrames_) { //leon
 		let result = {};
 		
@@ -117,8 +118,9 @@ class BuildWorker extends WorkerBase {
 
 	}
 
-	_copyResourcesLeon(uuidmap_) { //leon
-
+	//leon: modify particle .plist file and copy it. copy spine .atlas files directly (to EXPORT folder)
+	//leon: 幹為什麼要把兩種不同資源放在一起 黑人問號???
+	_appendResourcesParticleWithTextureNameKey(uuidmap_) { //leon
 		let result = {};
 		let resourcesPath = Path.join(Constants.ASSETS_PATH, 'resources');
 
@@ -150,20 +152,30 @@ class BuildWorker extends WorkerBase {
 			    resdst = Path.join(resdst, Constants.RESOURCE_FOLDER_NAME);
 			let pathInfo = result[uuid];
 
-			// update particle .plist file with textFileName key
-			let new_particle_plist_str = this._updateParticleFileWithTextureFileNameKey(pathInfo);
-
-			//write updated particle .plist string to dst-file
-			if (new_particle_plist_str !== null)
+			if (parse_utils.containsAny(pathInfo.relative_path, ['.plist']))
 			{
-				// copy 
+				// update particle .plist file with textFileName key
+				let new_particle_plist_str = this._updateParticleFileWithTextureFileNameKey(pathInfo);
+
+				//write updated particle .plist string to dst-file
+				if (new_particle_plist_str !== null)
+				{
+					// copy 
+					let src = pathInfo.fullpath;
+					let dst = Path.join(resdst, pathInfo.relative_path);
+					Fs.ensureDirSync(Path.dirname(dst));
+				//	Fs.copySync(src, dst);
+					Fs.writeFileSync(dst, new_particle_plist_str, {encoding: 'utf8'});
+
+					console.log("particle texture " + uuid + " sucessfully modified.");
+				}
+			}
+			else // copy .atlas files
+			{
 				let src = pathInfo.fullpath;
 				let dst = Path.join(resdst, pathInfo.relative_path);
 				Fs.ensureDirSync(Path.dirname(dst));
-			//	Fs.copySync(src, dst);
-				Fs.writeFileSync(dst, new_particle_plist_str, {encoding: 'utf8'});
-
-				console.log("particle texture " + uuid + " sucessfully modified.");
+				Fs.copySync(src, dst);
 			}
 		});
 
@@ -182,8 +194,8 @@ class BuildWorker extends WorkerBase {
 
 	//leon: return a new .plist xml string with updated-texture-filepath from uuid
 	_updateParticleFileWithTextureFileNameKey(pathInfo_) {
-
-		//https://www.w3schools.com/xml/xml_parser.asp
+	
+	//https://www.w3schools.com/xml/xml_parser.asp
 	//d	let text = 	"<bookstore><book>" +
 	//d				"<title>Everyday Italian</title>" +
 	//d				"<author>Giada De Laurentiis</author>" +

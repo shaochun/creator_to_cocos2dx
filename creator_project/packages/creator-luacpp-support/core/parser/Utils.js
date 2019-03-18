@@ -74,31 +74,35 @@ let fixFullpath = function(fullpath) {
 
 }
 
+let containsAny = (str, items) => {
+	for(let i in items){
+		let item = items[i];
+		if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
+			return true;
+	}   }
+	return false;
+}
+
 /**
  * //leon: Get resource path by uuid, targeting .atlas files
  * The return value:
  * @fullpath: full path of the resource
  * @relative_path: relative path to assets folder or creator default asset path
  */
-
-let get_relative_full_leon_particle_textures_by_uuid = (uuid) => {
-}
-
-
 let get_relative_full_leon_resources_path_by_uuid = (uuid, exts) => { //leon
 
-	//leon: https://stackoverflow.com/a/15202003
-	function ContainsAny(str, items) {
-		for(let i in items){
-			let item = items[i];
-			if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
-				return true;
-		}   }
-		return false;
-	}
+//	//leon: https://stackoverflow.com/a/15202003
+//	function containsAny(str, items) {
+//		for(let i in items){
+//			let item = items[i];
+//			if (str.indexOf(item) > -1) {	//leon: > -1 means it contains string
+//				return true;
+//		}   }
+//		return false;
+//	}
 
-	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
-		console.log("d hihihi atlas 1482");
+//d	if (uuid == "9e7382d4-5b96-493f-9f3b-1f4e0fe3c110")
+//d		console.log("d hihihi atlas 1482");
 
 	//this is specifically for spine assets
 //	let exts = ['.atlas', '.plist'];
@@ -107,7 +111,7 @@ let get_relative_full_leon_resources_path_by_uuid = (uuid, exts) => { //leon
 	let fullpath = Editor.remote.assetdb.uuidToFspath(uuid);
 
 //	if (fullpath.indexOf(".atlas") !== -1) //leon: !== means if contains string
-	if (ContainsAny(fullpath, exts)) //leon: !== means if contains string
+	if (containsAny(fullpath, exts)) //leon: !== means if contains string
 	{
 	//	let mountInfo = Editor.remote.assetdb.mountInfoByUuid(uuid);
 	//	let root = mountInfo.path;
@@ -488,7 +492,6 @@ module.exports = {
 	get_relative_full_path_by_uuid          			: get_relative_full_path_by_uuid,
 //	get_resource_fullpath_from_uuid						: get_resource_fullpath_from_uuid,						//leon
 	get_relative_full_leon_resources_path_by_uuid 		: get_relative_full_leon_resources_path_by_uuid,	//leon
-	get_relative_full_leon_particle_textures_by_uuid 	: get_relative_full_leon_particle_textures_by_uuid,
 	fixFullpath 										: fixFullpath,											//leon
 	get_sprite_frame_name_by_uuid           			: get_sprite_frame_name_by_uuid,
 	get_font_path_by_uuid                   			: get_font_path_by_uuid,
@@ -500,4 +503,5 @@ module.exports = {
 	get_sprite_frame_json_by_uuid           			: get_sprite_frame_json_by_uuid,
 	is_sprite_frame_from_texture_packer     			: is_sprite_frame_from_texture_packer,
 	clean                                   			: clean,
+	containsAny											: containsAny,
 }
