@@ -297,8 +297,12 @@ std::string CreatorReader::getVersion() const
     return _version;
 }
 
+static int debug_counter = 0; //leon
+
 cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
 {
+	debug_counter++; //leon
+
     cocos2d::Node *node = nullptr;
 
     const void* buffer = tree->object();
@@ -371,19 +375,30 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree) const
         case buffers::AnyNode_Mask:
             node = createMask(static_cast<const buffers::Mask*>(buffer));
             break;
-        case buffers::AnyNode_DragonBones:
+        /*case buffers::AnyNode_DragonBones:
             node = createArmatureDisplay(static_cast<const buffers::DragonBones*>(buffer));
-            break;
+            break;*/
         case buffers::AnyNode_MotionStreak:
             node = createMotionStreak(static_cast<const buffers::MotionStreak*>(buffer));
             break;
     }
 
+	std::string d_str = node->getName();
+
+
     // recursively add its children
     const auto& children = tree->children();
+
+//d	const void* d_object_buffer = tree->object();
+//d	const cocos2d::Node* d_n = createNode(static_cast<const buffers::Node*>(d_object_buffer));
+
+
     for(const auto& childBuffer: *children)
     {
         cocos2d::Node* child = createTree(childBuffer);
+
+		auto debug_size = sizeof(*child);
+
         if (child && node)
         {
             // should adjust child's position except Button's label
@@ -612,8 +627,12 @@ void CreatorReader::parseSprite(cocos2d::Sprite* sprite, const buffers::Sprite* 
     // order is important:
     // 1st: set sprite frame
     const auto& frameName = spriteBuffer->spriteFrameName();
-    if (frameName)
-        sprite->setSpriteFrame(frameName->str());
+	if (frameName)
+	{
+		auto a = frameName->str();					//leon
+		sprite->setSpriteFrame(frameName->str());	//original code
+		//	sprite->setSpriteFrame("ddddd");		//leon
+	}
 
     
     // 2nd: node properties
@@ -786,6 +805,8 @@ void CreatorReader::parseRichText(cocos2d::ui::RichText* richText, const buffers
 
 cocos2d::ParticleSystemQuad* CreatorReader::createParticle(const buffers::Particle* particleBuffer) const
 {
+	size_t aaa = sizeof(*particleBuffer);	//leon
+
     const auto& particleFilename = particleBuffer->particleFilename();
     cocos2d::ParticleSystemQuad* particle = cocos2d::ParticleSystemQuad::create(particleFilename->str());
     if (particle)
@@ -1396,6 +1417,7 @@ void CreatorReader::parseSpineSkeleton(spine::SkeletonAnimation* spine, const bu
     spine->setDebugBonesEnabled(debugBones);
 }
 
+/*
 dragonBones::CCArmatureDisplay* CreatorReader::createArmatureDisplay(const buffers::DragonBones* dragonBonesBuffer) const
 {
     const auto& boneDataPath = dragonBonesBuffer->boneDataPath();
@@ -1435,7 +1457,7 @@ void CreatorReader::parseArmatureDisplay(dragonBones::CCArmatureDisplay* armatur
         armatureDisplay->getAnimation().play(animationName->str());
     }
 }
-
+*/
 
 //
 // Helper methods
