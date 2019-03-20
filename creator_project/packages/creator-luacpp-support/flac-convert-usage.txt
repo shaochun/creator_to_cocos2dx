@@ -1,0 +1,1 @@
+flatc -t CreatorReader.fbs -- third-2-export-0.ccreator

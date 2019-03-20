@@ -68,7 +68,7 @@ struct AnimationRef;
 
 struct Collider;
 
-struct DragonBones;
+//struct DragonBones;
 
 struct AnimationClip;
 
@@ -335,7 +335,7 @@ enum AnyNode {
   AnyNode_ToggleGroup = 18,
   AnyNode_PageView = 19,
   AnyNode_Mask = 20,
-  AnyNode_DragonBones = 21,
+//  AnyNode_DragonBones = 21,
   AnyNode_MotionStreak = 22,
   AnyNode_MIN = AnyNode_NONE,
   AnyNode_MAX = AnyNode_MotionStreak
@@ -432,9 +432,9 @@ template<> struct AnyNodeTraits<Mask> {
   static const AnyNode enum_value = AnyNode_Mask;
 };
 
-template<> struct AnyNodeTraits<DragonBones> {
+/*template<> struct AnyNodeTraits<DragonBones> {
   static const AnyNode enum_value = AnyNode_DragonBones;
-};
+};*/
 
 template<> struct AnyNodeTraits<MotionStreak> {
   static const AnyNode enum_value = AnyNode_MotionStreak;
@@ -2544,11 +2544,13 @@ struct SpineSkeleton FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PREMULTIPLIEDALPHA = 16,
     VT_TIMESCALE = 18,
     VT_DEBUGSLOTS = 20,
-    VT_DEBUGBONES = 22
+    VT_DEBUGBONES = 22,
+	VT_ATLASTEXT = 24,
   };
   const Node *node() const { return GetPointer<const Node *>(VT_NODE); }
   const flatbuffers::String *jsonFile() const { return GetPointer<const flatbuffers::String *>(VT_JSONFILE); }
   const flatbuffers::String *atlasFile() const { return GetPointer<const flatbuffers::String *>(VT_ATLASFILE); }
+  const flatbuffers::String *atlasText() const { return GetPointer<const flatbuffers::String *>(VT_ATLASTEXT); }
   const flatbuffers::String *defaultSkin() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTSKIN); }
   const flatbuffers::String *defaultAnimation() const { return GetPointer<const flatbuffers::String *>(VT_DEFAULTANIMATION); }
   bool loop() const { return GetField<uint8_t>(VT_LOOP, 0) != 0; }
@@ -2755,6 +2757,7 @@ inline flatbuffers::Offset<Collider> CreateColliderDirect(flatbuffers::FlatBuffe
   return CreateCollider(_fbb, type, offset, size, points ? _fbb.CreateVector<const Vec2 *>(*points) : 0, radius);
 }
 
+/*
 struct DragonBones FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NODE = 4,
@@ -2845,7 +2848,7 @@ inline flatbuffers::Offset<DragonBones> CreateDragonBonesDirect(flatbuffers::Fla
     int32_t playTimes = 0) {
   return CreateDragonBones(_fbb, node, boneDataPath ? _fbb.CreateString(boneDataPath) : 0, boneDataName ? _fbb.CreateString(boneDataName) : 0, textureDataPath ? _fbb.CreateString(textureDataPath) : 0, armature ? _fbb.CreateString(armature) : 0, animation ? _fbb.CreateString(animation) : 0, timeScale, playTimes);
 }
-
+*/
 struct AnimationClip FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_NAME = 4,
@@ -4029,7 +4032,7 @@ inline bool VerifyAnyNode(flatbuffers::Verifier &verifier, const void *union_obj
     case AnyNode_ToggleGroup: return verifier.VerifyTable(reinterpret_cast<const ToggleGroup *>(union_obj));
     case AnyNode_PageView: return verifier.VerifyTable(reinterpret_cast<const PageView *>(union_obj));
     case AnyNode_Mask: return verifier.VerifyTable(reinterpret_cast<const Mask *>(union_obj));
-    case AnyNode_DragonBones: return verifier.VerifyTable(reinterpret_cast<const DragonBones *>(union_obj));
+//  case AnyNode_DragonBones: return verifier.VerifyTable(reinterpret_cast<const DragonBones *>(union_obj));
     case AnyNode_MotionStreak: return verifier.VerifyTable(reinterpret_cast<const MotionStreak *>(union_obj));
     default: return false;
   }
