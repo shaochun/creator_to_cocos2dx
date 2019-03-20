@@ -9,7 +9,7 @@ const get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_b
 const get_spine_info_by_uuid 		= require('./Utils').get_spine_info_by_uuid;
 let uuidInfos = null;
 
-const klawSync = require('../leon/klaw-sync/klaw-sync');
+//const klawSync = require('../leon/klaw-sync/klaw-sync');
 
 
 /**
@@ -94,19 +94,19 @@ class FireParser {
 		state._assetpath = assetpath;
 		state._exportRootPath = exportpath;
 
-
 		state._json_data = JSON.parse(fs.readFileSync(filename));
 
-		//leon: > -1 means 'contains': we want 'contains .atlas' but does 'not contains .meta'
+/*		//leon: > -1 means 'contains': we want 'contains .atlas' but does 'not contains .meta'
 		let filterCallback = f => f.path.indexOf('.atlas') > -1 && !(f.path.indexOf('.meta') > -1)
 
 		let original_atlas_files = klawSync(Constants.ASSETS_PATH, {nodir: true, traverseAll: true, filter: filterCallback});
 	//	let original_atlas_files = klawSync(Constants.ASSETS_PATH, {nodir: true});
 
 		//leon: collect particle and spine relatives first
+*/		
 		state._json_data.forEach(obj => {
 			//leon: handle spine texture atlases
-			if (obj.__type__ === 'sp.Skeleton')
+/*			if (obj.__type__ === 'sp.Skeleton')
 			{
 				let short_atlas_url = get_spine_info_by_uuid(obj._N$skeletonData.__uuid__).atlas_url;
 				
@@ -130,9 +130,9 @@ class FireParser {
 
 				});
 			}
-
+*/
 			//leon: collect particle's sprite frames
-			else if (obj.__type__ === 'cc.ParticleSystem')
+			/*else*/ if (obj.__type__ === 'cc.ParticleSystem')
 			{
 				state._particle_sprite_frames[obj._id] = obj._spriteFrame;
 			}	

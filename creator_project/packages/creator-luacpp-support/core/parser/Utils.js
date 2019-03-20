@@ -1,7 +1,10 @@
-const path = require('path');
-const fs = require('fs');
-const state = require('./Global').state;
-const Utils = require('../Utils');
+const path      = require('path');
+const fs        = require('fs');
+const state     = require('./Global').state;
+const Utils     = require('../Utils');
+const Constants = require('../Constants'); //leon
+
+const klawSync  = require('../leon/klaw-sync/klaw-sync');
 
 /**
  * Get resource path by uuid.
@@ -336,7 +339,32 @@ let get_spine_info_by_uuid = function (uuid) {
 	//leon: atlas_url has bug	
 		// get atlas path
 	//	state._uuid[uuid].atlas_url = get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__);
-		state._uuid[uuid].atlas_url = `${contents_json._name}.atlas`;
+	//r	state._uuid[uuid].atlas_url = `${contents_json._name}.atlas`;
+
+		let short_atlas_url = `${contents_json._name}.atlas`;
+
+		///leon: migrate code from ConvertFireToJson.js
+		let filterCallback = f => f.path.indexOf('.atlas') > -1 && !(f.path.indexOf('.meta') > -1)
+		let original_atlas_files = klawSync(Constants.ASSETS_PATH, {nodir: true, traverseAll: true, filter: filterCallback});
+
+		let protect_count = 0;
+		Object.keys(original_atlas_files).forEach( k => {
+		//	consold.log(original_atlas_files[k]);
+		//	console.log(k);
+			let atlas_full_pathname = original_atlas_files[k].path;
+			if (atlas_full_pathname.indexOf(short_atlas_url) > -1)
+			{
+				//leon: relpath = full - start path; remove the first \; replace \ to /
+			//	let relpathname = atlas_full_pathname.replace(Constants.ASSETS_PATH, '').substr(1).replace(/\\/g, '/');
+				let relpathname = atlas_full_pathname.replace(Constants.ASSETS_PATH, '').substr(1); // backslash style
+				state._uuid[uuid].atlas_url = {fullpath: atlas_full_pathname, relative_path: relpathname};
+
+				protect_count++;
+			}
+		});
+		if (protect_count > 1) Utils.log(`! duplicate spine .atlas file: ${state._uuid[uuid].atlas_url}`);
+
+
 		// add to _uuid to copy resources
 		state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;
 
