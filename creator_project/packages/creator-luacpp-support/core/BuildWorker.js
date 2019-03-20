@@ -12,11 +12,13 @@ const Del = require('del')
 const parse_fire = require('./parser/ConvertFireToJson');
 const parse_utils = require('./parser/Utils')
 
+let global_state = require('./parser/Global').state;
+
 const {WorkerBase, registerWorker} = require('./WorkerBase');
 
 const plugin_profile = 'profile://project/creator-luacpp-support.json';
 
-const vkbeautify = require('./leon/vkbeautify.0.99.3.js');
+const vkbeautify = require('./leon/vkbeautify.0.99.3');
 
 class BuildWorker extends WorkerBase {
 	run(state, callback) {
@@ -38,8 +40,8 @@ class BuildWorker extends WorkerBase {
 			Object.assign(copyReourceInfos.theUuids, dynamicLoadRes);
 			this._compileJsonToBinary(function() {
 				this._copyResources(copyReourceInfos.theUuids);
-				this._appendResourcesParticleWithTextureNameKey(uuidmap, copyReourceInfos.particleSpriteFrames);			//leon: copy spine atlas files
-				this._copyResourcesParticleSpriteFrames(copyReourceInfos.particleSpriteFrames);		//leon: copy spine atlas files
+				this._appendResourcesParticleWithTextureNameKey(uuidmap); 						//leon: copy spine atlas files
+				this._copyResourcesParticleSpriteFrames(copyReourceInfos.particleSpriteFrames);	//leon: copy spine atlas files
 				Editor.Ipc.sendToAll('creator-luacpp-support:state-changed', 'finish', 100);
 				this._callback();
 				Utils.log('[creator-luacpp-support] build end');
@@ -50,7 +52,7 @@ class BuildWorker extends WorkerBase {
 
 	_convertFireToJson(uuidmap) {
 		let fireFiles = this._getFireList();
-		let copyReourceInfos = parse_fire(fireFiles, 'creator', Constants.JSON_PATH, uuidmap);
+		let copyReourceInfos = parse_fire(fireFiles, 'creator', this._state.path, Constants.JSON_PATH, uuidmap);
 
 		return copyReourceInfos;
 	}

@@ -22,6 +22,9 @@ class State {
         //leon: record all particle sprite frames
         this._particle_sprite_frames = {};
 
+        //leon: record spine's texture atlases
+        this._spine_texture_atlases = [];
+
         // contains all resource paths
         // key is uuid, value is { relative_path: '', full_path: '' }
         // need to use the information to copy resources
@@ -32,6 +35,16 @@ class State {
         // clips
         // key is the uuid, value is the animation
         this._clips = {};
+
+        //leon: asset export root path
+        this._exportRootPath = '';
+
+        //leon: asset original path
+        this._resRootPath = '';
+    }
+
+    setExportRootpath(path) {
+        this._exportRootPath = path;
     }
 }
 

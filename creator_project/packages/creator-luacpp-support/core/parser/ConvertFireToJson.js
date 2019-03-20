@@ -6,8 +6,11 @@ const Constants = require('../Constants');
 const Scene = require('./Scene');
 const state = require('./Global').state;
 const get_sprite_frame_name_by_uuid = require('./Utils').get_sprite_frame_name_by_uuid;
-
+const get_spine_info_by_uuid 		= require('./Utils').get_spine_info_by_uuid;
 let uuidInfos = null;
+
+const klawSync = require('../leon/klaw-sync/klaw-sync');
+
 
 /**
  * bootstrap + helper functions
@@ -83,16 +86,61 @@ class FireParser {
 		return fs.openSync(filename, 'w');
 	}
 
-	run(filename, assetpath, path_to_json_files) {
+	run(filename, assetpath, exportpath, path_to_json_files) {
 		state._filename = path.basename(filename, '.fire');
 		let sub_folder = path.dirname(filename).substr(Constants.ASSETS_PATH.length + 1);
 		let json_name = path.join(path_to_json_files, sub_folder, state._filename) + '.json';
 		this._json_file = this.create_file(json_name);
 		state._assetpath = assetpath;
+		state._exportRootPath = exportpath;
+
 
 		state._json_data = JSON.parse(fs.readFileSync(filename));
 
+		//leon: > -1 means 'contains': we want 'contains .atlas' but does 'not contains .meta'
+		let filterCallback = f => f.path.indexOf('.atlas') > -1 && !(f.path.indexOf('.meta') > -1)
+
+		let original_atlas_files = klawSync(Constants.ASSETS_PATH, {nodir: true, traverseAll: true, filter: filterCallback});
+	//	let original_atlas_files = klawSync(Constants.ASSETS_PATH, {nodir: true});
+
+		//leon: collect particle and spine relatives first
 		state._json_data.forEach(obj => {
+			//leon: handle spine texture atlases
+			if (obj.__type__ === 'sp.Skeleton')
+			{
+				let short_atlas_url = get_spine_info_by_uuid(obj._N$skeletonData.__uuid__).atlas_url;
+				
+				//leon: find atlas_url realpath
+				// search for original data path
+
+				//state.
+				Object.keys(original_atlas_files).forEach( k => {
+
+				//	consold.log(original_atlas_files[k]);
+				//	console.log(k);
+
+					let atlas_full_pathname = original_atlas_files[k].path;
+
+					if (atlas_full_pathname.indexOf(short_atlas_url) > -1)
+					{
+						//leon: relpath = full - start path; remove the first \; replace \ to /
+						let wanted = atlas_full_pathname.replace(Constants.ASSETS_PATH, '').substr(1).replace(/\\/g, '/');
+						state._spine_texture_atlases.push(wanted);
+					}
+
+				});
+			}
+
+			//leon: collect particle's sprite frames
+			else if (obj.__type__ === 'cc.ParticleSystem')
+			{
+				state._particle_sprite_frames[obj._id] = obj._spriteFrame;
+			}	
+		});
+
+		// original
+		state._json_data.forEach(obj => {
+
 			if (obj.__type__ === 'cc.SceneAsset') {
 				let scene = obj.scene;
 				let scene_idx = scene.__id__;
@@ -108,11 +156,8 @@ class FireParser {
 				fs.close(this._json_file);
 			}
 
-			//leon: collect particle's sprite frames
-			else if (obj.__type__ === 'cc.ParticleSystem')
-			{
-				state._particle_sprite_frames[obj._id] = obj._spriteFrame;
-			}
+
+
 		});
 	}
 
@@ -123,19 +168,19 @@ class FireParser {
 	}
 }
 
-function parse_fire(filenames, assetpath, path_to_json_files, uuidmaps) {
+function parse_fire(filenames, assetpath, exportpath, path_to_json_files, uuidmaps) {
 	if (assetpath[-1] != '/')
 		assetpath += '/';
 
 	uuidinfos = uuidmaps;
 
-	let uuid = {};
-	let particleSpriteFrames = {}; //leon
+	let uuid = {};					//original: 原有的 uuidmap
+	let particleSpriteFrames = {};  //leon:     particle 使用的 spriteFrames
 
 	filenames.forEach(function(filename) {
 		state.reset();
 		let parser = new FireParser();
-		parser.run(filename, assetpath, path_to_json_files);
+		parser.run(filename, assetpath, exportpath, path_to_json_files);	//original: 主要入口
 		particleSpriteFrames = parser.getParticleSpriteFrames(); //leon
 		for(let key in state._uuid) {
 

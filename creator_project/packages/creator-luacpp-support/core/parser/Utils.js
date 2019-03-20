@@ -334,10 +334,11 @@ let get_spine_info_by_uuid = function (uuid) {
 		});
 		
 	//leon: atlas_url has bug	
-	//	// get atlas path
+		// get atlas path
 	//	state._uuid[uuid].atlas_url = get_relative_full_path_by_uuid(contents_json.atlasUrl.__uuid__);
-	//	// add to _uuid to copy resources
-	//	state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;
+		state._uuid[uuid].atlas_url = `${contents_json._name}.atlas`;
+		// add to _uuid to copy resources
+		state._uuid[uuid + '-atlas'] = state._uuid[uuid].atlas_url;
 
 		// get textures path
 		for (let i = 0, len = contents_json.textures.length; i < len; ++i) {
