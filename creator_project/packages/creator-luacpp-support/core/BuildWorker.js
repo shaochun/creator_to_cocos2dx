@@ -52,7 +52,7 @@ class BuildWorker extends WorkerBase {
 
 	_convertFireToJson(uuidmap) {
 		let fireFiles = this._getFireList();
-		let copyReourceInfos = parse_fire(fireFiles, 'creator', this._state.path, Constants.JSON_PATH, uuidmap);
+		let copyReourceInfos = parse_fire(fireFiles, 'creator', /*this._state.path,*/ Constants.JSON_PATH, uuidmap);
 
 		return copyReourceInfos;
 	}

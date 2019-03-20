@@ -86,13 +86,13 @@ class FireParser {
 		return fs.openSync(filename, 'w');
 	}
 
-	run(filename, assetpath, exportpath, path_to_json_files) {
+	run(filename, assetpath, /*exportpath,*/ path_to_json_files) {
 		state._filename = path.basename(filename, '.fire');
 		let sub_folder = path.dirname(filename).substr(Constants.ASSETS_PATH.length + 1);
 		let json_name = path.join(path_to_json_files, sub_folder, state._filename) + '.json';
 		this._json_file = this.create_file(json_name);
 		state._assetpath = assetpath;
-		state._exportRootPath = exportpath;
+	//	state._exportRootPath = exportpath;
 
 		state._json_data = JSON.parse(fs.readFileSync(filename));
 
@@ -168,7 +168,7 @@ class FireParser {
 	}
 }
 
-function parse_fire(filenames, assetpath, exportpath, path_to_json_files, uuidmaps) {
+function parse_fire(filenames, assetpath, /*exportpath,*/ path_to_json_files, uuidmaps) {
 	if (assetpath[-1] != '/')
 		assetpath += '/';
 
@@ -180,7 +180,7 @@ function parse_fire(filenames, assetpath, exportpath, path_to_json_files, uuidma
 	filenames.forEach(function(filename) {
 		state.reset();
 		let parser = new FireParser();
-		parser.run(filename, assetpath, exportpath, path_to_json_files);	//original: 主要入口
+		parser.run(filename, assetpath, /*exportpath,*/ path_to_json_files);	//original: 主要入口
 		particleSpriteFrames = parser.getParticleSpriteFrames(); //leon
 		for(let key in state._uuid) {
 

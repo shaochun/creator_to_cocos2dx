@@ -37,10 +37,10 @@ class State {
         this._clips = {};
 
         //leon: asset export root path
-        this._exportRootPath = '';
+        //this._exportRootPath = '';
 
         //leon: asset original path
-        this._resRootPath = '';
+        //this._resRootPath = '';
     }
 
     setExportRootpath(path) {
