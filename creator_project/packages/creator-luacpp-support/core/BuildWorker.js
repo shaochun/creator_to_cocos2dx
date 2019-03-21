@@ -231,7 +231,7 @@ class BuildWorker extends WorkerBase {
 			//leon: don't know why. dirty patch
 			texture_uuid.fullpath = parse_utils.fixFullpath(texture_uuid.fullpath);
 			texture_uuid.relative_path = parse_utils.fixFullpath(texture_uuid.relative_path);
-			let relative_path_forwardslash = texture_uuid.relative_path.replace(/\\/g, '/');
+			let relative_path_forwardslash = Path.join(Constants.RESOURCE_FOLDER_NAME, texture_uuid.relative_path).replace(/\\/g, '/');
 			console.log("bp");
 
 		//d	return texture_uuid;	//good
