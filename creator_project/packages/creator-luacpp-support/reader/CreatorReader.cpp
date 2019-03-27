@@ -270,8 +270,12 @@ cocos2d::Scene* CreatorReader::getSceneGraph() const
     // should not just node's position because it is a Scene, and it will cause issue that click position is not correct(it is a bug of cocos2d-x)
     // and should not change camera's position
     for (auto& child : node->getChildren())
-        if (dynamic_cast<Camera*>(child) == nullptr)
-            child->setPosition(child->getPosition() + _positionDiffDesignResolution);
+	{
+		if (dynamic_cast<Camera*>(child) == nullptr)
+		{
+			child->setPosition(child->getPosition() + _positionDiffDesignResolution);
+			int bp = 1; //leon
+	}	}
     
     _animationManager->playOnLoad();
     
@@ -465,8 +469,9 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()));
     node->setRotationSkewX(nodeBuffer->rotationSkewX());
     node->setRotationSkewY(nodeBuffer->rotationSkewY());
-    node->setScaleX(nodeBuffer->scaleX());
-    node->setScaleY(nodeBuffer->scaleY());
+	node->setScaleX(nodeBuffer->scaleX());
+	node->setScaleY(nodeBuffer->scaleY());
+//	node->setScale(nodeBuffer->scale()->x, nodeBuffer->scale()->y); //leon: not using
     node->setSkewX(nodeBuffer->skewX());
     node->setSkewY(nodeBuffer->skewY());
     const auto& tag = nodeBuffer->tag();
@@ -1352,8 +1357,10 @@ void CreatorReader::parseMotionStreak(cocos2d::MotionStreak* motionStreak, const
         if (position) node->setPosition(cocos2d::Vec2(position->x(), position->y()));
         node->setRotationSkewX(nodeBuffer->rotationSkewX());
         node->setRotationSkewY(nodeBuffer->rotationSkewY());
-        node->setScaleX(nodeBuffer->scaleX());
-        node->setScaleY(nodeBuffer->scaleY());
+		node->setScaleX(nodeBuffer->scaleX());
+		node->setScaleY(nodeBuffer->scaleY());
+//		node->setScaleX(nodeBuffer->scale()->x); //leon: not using
+//		node->setScaleY(nodeBuffer->scale()->y);
         node->setSkewX(nodeBuffer->skewX());
         node->setSkewY(nodeBuffer->skewY());
         const auto& tag = nodeBuffer->tag();
